@@ -39,6 +39,7 @@ def bbox_to_rect(bbox, color):
 
 class Benchmark():
     """Benchmark programs."""
+
     def __init__(self, prefix=None):
         self.prefix = prefix + ' ' if prefix else ''
 
@@ -86,13 +87,13 @@ def data_iter_consecutive(corpus_indices, batch_size, num_steps, ctx=None):
     corpus_indices = nd.array(corpus_indices, ctx=ctx)
     data_len = len(corpus_indices)
     batch_len = data_len // batch_size
-    indices = corpus_indices[0 : batch_size * batch_len].reshape((
+    indices = corpus_indices[0: batch_size * batch_len].reshape((
         batch_size, batch_len))
     epoch_size = (batch_len - 1) // num_steps
     for i in range(epoch_size):
         i = i * num_steps
-        X = indices[:, i : i + num_steps]
-        Y = indices[:, i + 1 : i + num_steps + 1]
+        X = indices[:, i: i + num_steps]
+        Y = indices[:, i + 1: i + num_steps + 1]
         yield X, Y
 
 
@@ -104,11 +105,11 @@ def data_iter_random(corpus_indices, batch_size, num_steps, ctx=None):
     random.shuffle(example_indices)
 
     def _data(pos):
-        return corpus_indices[pos : pos + num_steps]
+        return corpus_indices[pos: pos + num_steps]
 
     for i in range(epoch_size):
         i = i * batch_size
-        batch_indices = example_indices[i : i + batch_size]
+        batch_indices = example_indices[i: i + batch_size]
         X = nd.array(
             [_data(j * num_steps) for j in batch_indices], ctx=ctx)
         Y = nd.array(
@@ -380,6 +381,7 @@ def read_voc_images(root='../data/VOCdevkit/VOC2012', is_train=True):
 
 class Residual(nn.Block):
     """The residual block."""
+
     def __init__(self, num_channels, use_1x1conv=False, strides=1, **kwargs):
         super(Residual, self).__init__(**kwargs)
         self.conv1 = nn.Conv2D(num_channels, kernel_size=3, padding=1,
@@ -426,6 +428,7 @@ def resnet18(num_classes):
 
 class RNNModel(nn.Block):
     """RNN model."""
+
     def __init__(self, rnn_layer, vocab_size, **kwargs):
         super(RNNModel, self).__init__(**kwargs)
         self.rnn = rnn_layer
@@ -547,7 +550,7 @@ def train(train_iter, test_iter, net, loss, trainer, ctx, num_epochs):
             train_l_sum += sum([l.sum().asscalar() for l in ls])
             n += sum([l.size for l in ls])
             train_acc_sum += sum([(y_hat.argmax(axis=1) == y).sum().asscalar()
-                                 for y_hat, y in zip(y_hats, ys)])
+                                  for y_hat, y in zip(y_hats, ys)])
             m += sum([y.size for y in ys])
         test_acc = evaluate_accuracy(test_iter, net, ctx)
         print('epoch %d, loss %.4f, train acc %.3f, test acc %.3f, '
@@ -703,7 +706,8 @@ def train_ch7(trainer_fn, states, hyperparams, features, labels, batch_size=10,
               num_epochs=2):
     """Train a linear regression model."""
     net, loss = linreg, squared_loss
-    w, b = nd.random.normal(scale=0.01, shape=(features.shape[1], 1)), nd.zeros(1)
+    w, b = nd.random.normal(scale=0.01, shape=(
+        features.shape[1], 1)), nd.zeros(1)
     w.attach_grad()
     b.attach_grad()
 
@@ -808,6 +812,7 @@ def voc_rand_crop(feature, label, height, width):
 
 class VOCSegDataset(gdata.Dataset):
     """The Pascal VOC2012 Dataset."""
+
     def __init__(self, is_train, crop_size, voc_dir, colormap2label):
         self.rgb_mean = nd.array([0.485, 0.456, 0.406])
         self.rgb_std = nd.array([0.229, 0.224, 0.225])

@@ -41,8 +41,8 @@ def load_data_fashion_mnist(batch_size, resize=None, root=os.path.join(
 
 
 def load_data_mnist(batch_size, resize=None, root=os.path.join(
-        '~', '.mxnet', 'datasets', 'fashion-mnist')):
-    """Download the fashion mnist dataset and then load into memory."""
+        '~', '.mxnet', 'datasets', 'mnist')):
+    """Download the mnist dataset and then load into memory."""
     root = os.path.expanduser(root)
     transformer = []
     if resize:
@@ -101,7 +101,7 @@ def train(net, train_iter, test_iter, batch_size, trainer, ctx, num_epochs):
 
         if test_acc > best_test_acc:
             best_test_acc = test_acc
-            net.save_parameters('../model/MNIST/mlp.params')
+            net.save_parameters('./model/MNIST/mlp.params')
         else:
             lr_scheduler.learning_rate *= 0.9
 

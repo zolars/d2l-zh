@@ -63,23 +63,6 @@ def load_data_mnist(batch_size, resize=None, root=os.path.join(
     return train_iter, test_iter
 
 
-# net Initialize
-net = nn.Sequential()
-net.add(nn.Conv2D(channels=6, kernel_size=5, activation='sigmoid'),
-        nn.MaxPool2D(pool_size=2, strides=2),
-        nn.Conv2D(channels=16, kernel_size=5, activation='sigmoid'),
-        nn.MaxPool2D(pool_size=2, strides=2),
-        # Dense会默认将(批量大小, 通道, 高, 宽)形状的输入转换成
-        # (批量大小, 通道 * 高 * 宽)形状的输入
-        nn.Dense(120, activation='sigmoid'),
-        nn.Dense(84, activation='sigmoid'),
-        nn.Dense(10))
-
-# Load data
-batch_size = 256
-train_iter, test_iter = load_data_mnist(batch_size=batch_size)
-
-
 def train(net, train_iter, test_iter, batch_size, trainer, ctx, num_epochs):
     print('training on', ctx)
     loss = gloss.SoftmaxCrossEntropyLoss()
@@ -111,13 +94,30 @@ def train(net, train_iter, test_iter, batch_size, trainer, ctx, num_epochs):
                  time.time() - start))
 
 
-start_time = time.clock()
-lr, num_epochs = 1, 50
-ctx = d2l.try_gpu()
-# Initialize learning rate to lr
-lr_scheduler = SimpleLRScheduler(learning_rate=lr)
-net.initialize(force_reinit=True, ctx=ctx, init=init.Xavier())
-trainer = gluon.Trainer(net.collect_params(), 'sgd',
-                        optimizer_params={'lr_scheduler': lr_scheduler})
-train(net, train_iter, test_iter, batch_size, trainer, ctx, num_epochs)
-print("Time consume : ", time.clock() - start_time)
+if __name__ == "__main__":
+    # net Initialize
+    net = nn.Sequential()
+    net.add(nn.Conv2D(channels=6, kernel_size=5, activation='sigmoid'),
+            nn.MaxPool2D(pool_size=2, strides=2),
+            nn.Conv2D(channels=16, kernel_size=5, activation='sigmoid'),
+            nn.MaxPool2D(pool_size=2, strides=2),
+            # Dense会默认将(批量大小, 通道, 高, 宽)形状的输入转换成
+            # (批量大小, 通道 * 高 * 宽)形状的输入
+            nn.Dense(120, activation='sigmoid'),
+            nn.Dense(84, activation='sigmoid'),
+            nn.Dense(10))
+
+    # Load data
+    batch_size = 256
+    train_iter, test_iter = load_data_mnist(batch_size=batch_size)
+
+    start_time = time.clock()
+    lr, num_epochs = 1, 50
+    ctx = d2l.try_gpu()
+    # Initialize learning rate to lr
+    lr_scheduler = SimpleLRScheduler(learning_rate=lr)
+    net.initialize(force_reinit=True, ctx=ctx, init=init.Xavier())
+    trainer = gluon.Trainer(net.collect_params(), 'sgd',
+                            optimizer_params={'lr_scheduler': lr_scheduler})
+    train(net, train_iter, test_iter, batch_size, trainer, ctx, num_epochs)
+    print("Time consume : ", time.clock() - start_time)

@@ -683,7 +683,7 @@ def train_ch5(net, train_iter, test_iter, batch_size, trainer, ctx,
     print('training on', ctx)
     loss = gloss.SoftmaxCrossEntropyLoss()
     for epoch in range(num_epochs):
-        train_l_sum, train_acc_sum, n, start = 0.0, 0.0, 0, time.time()
+        train_l_sum, train_acc_sum, n, start = 0.0, 0.0, 0, time.clock()
         for X, y in train_iter:
             X, y = X.as_in_context(ctx), y.as_in_context(ctx)
             with autograd.record():
@@ -699,7 +699,7 @@ def train_ch5(net, train_iter, test_iter, batch_size, trainer, ctx,
         print('epoch %d, loss %.4f, train acc %.3f, test acc %.3f, '
               'time %.1f sec'
               % (epoch + 1, train_l_sum / n, train_acc_sum / n, test_acc,
-                 time.time() - start))
+                 time.clock() - start))
 
 
 def train_ch7(trainer_fn, states, hyperparams, features, labels, batch_size=10,

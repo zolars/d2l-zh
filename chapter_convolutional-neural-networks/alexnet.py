@@ -2,6 +2,8 @@
 import os
 try:
     os.chdir(os.path.join(os.getcwd(), 'chapter_convolutional-neural-networks'))
+    os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+    os.environ["MXNET_CUDNN_AUTOTUNE_DEFAULT"] = "0"
     print(os.getcwd())
 except:
     pass
